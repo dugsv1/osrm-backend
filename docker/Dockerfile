@@ -1,3 +1,4 @@
+# Builder phase remains unchanged
 FROM debian:bullseye-slim as builder
 ARG DOCKER_TAG
 ARG BUILD_CONCURRENCY
@@ -39,21 +40,18 @@ RUN NPROC=${BUILD_CONCURRENCY:-$(nproc)} && \
     strip /usr/local/bin/* && \
     rm -rf /src
 
-
-# Multistage build to reduce image size - https://docs.docker.com/engine/userguide/eng-image/multistage-build/#use-multi-stage-builds
-# Only the content below ends up in the image, this helps remove /src from the image (which is large)
-FROM debian:bullseye-slim as runstage
+# Second stage build: changing from Debian to Ubuntu 22.04
+FROM ubuntu:22.04 as runstage
 
 COPY --from=builder /usr/local /usr/local
 COPY --from=builder /opt /opt
 
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends libboost-program-options1.74.0 libboost-regex1.74.0 \
-        libboost-date-time1.74.0 libboost-chrono1.74.0 libboost-filesystem1.74.0 \
-        libboost-iostreams1.74.0 libboost-system1.74.0 libboost-thread1.74.0 \
+    apt-get install -y --no-install-recommends libboost-program-options-dev libboost-regex-dev \
+        libboost-date-time-dev libboost-chrono-dev libboost-filesystem-dev \
+        libboost-iostreams-dev libboost-system-dev libboost-thread-dev \
         expat liblua5.4-0 && \
     rm -rf /var/lib/apt/lists/* && \
-# add /usr/local/lib to ldconfig to allow loading libraries from there
     ldconfig /usr/local/lib
 
 RUN /usr/local/bin/osrm-extract --help && \
@@ -65,3 +63,4 @@ RUN /usr/local/bin/osrm-extract --help && \
 WORKDIR /opt
 
 EXPOSE 5000
+CMD ["sleep", "infinity"]
