@@ -51,8 +51,12 @@ RUN apt-get update && \
         libboost-date-time-dev libboost-chrono-dev libboost-filesystem-dev \
         libboost-iostreams-dev libboost-system-dev libboost-thread-dev \
         expat liblua5.4-0 && \
+        python3.9 python3-pip && \
     rm -rf /var/lib/apt/lists/* && \
     ldconfig /usr/local/lib
+
+# Install Python packages
+RUN pip3 install fastapi uvicorn
 
 RUN /usr/local/bin/osrm-extract --help && \
     /usr/local/bin/osrm-routed --help && \
@@ -60,7 +64,7 @@ RUN /usr/local/bin/osrm-extract --help && \
     /usr/local/bin/osrm-partition --help && \
     /usr/local/bin/osrm-customize --help
 
-WORKDIR /opt
+WORKDIR /
 
 EXPOSE 5000
 CMD ["sleep", "infinity"]
