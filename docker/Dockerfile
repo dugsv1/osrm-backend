@@ -51,7 +51,7 @@ RUN apt-get update && \
         libboost-date-time-dev libboost-chrono-dev libboost-filesystem-dev \
         libboost-iostreams-dev libboost-system-dev libboost-thread-dev \
         expat liblua5.4-0 && \
-        python3.9 python3-pip && \
+        python3 python3-pip && \
     rm -rf /var/lib/apt/lists/* && \
     ldconfig /usr/local/lib
 
